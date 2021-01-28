@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:imagebutton/imagebutton.dart';
-import 'package:tracking_app2/healthTracking.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -10,9 +9,9 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {                                           //Main
   int choosenCat = 1;                                                            //var needed for helper function to display the correct category of data to be recorded
   String workoutTxt = "";                                                        //var for text inputed to record the workout movement
-  String muscleString;                                                          // string for the drop down button to show all muscle drops
-  String workoutString;
-  String muscleHint = 'Please choose muscle group';
+  String muscle_string;                                                         // string for the drop down button to show all muscle drops
+  String muscle_to_workout;
+  String workout_string;
   List muscles = ["Legs", "Core", "Chest", "Shoulders", "Biceps", "Triceps", "Back"];
   List legs = ['Barbell Back Squat', 'Barbell Front Squat', 'Deadlift',"Sumo Deadlift", 'Calf Raises', "Bulgarians", "Hip Band Walks"];
   List core = ['Core Cycle A', 'Core Cycle B'];
@@ -21,8 +20,6 @@ class _HomeState extends State<Home> {                                          
   List biceps = ['Waiter Curls', 'Hammer Curls', 'In & Out Curls', 'In-Knee Curl', 'Rb Prayer Curls', "21's"];
   List triceps = ['Overheard Extensions', 'Rb Tricep Pushdowns', 'Bent Over Tricep Kickbacks', 'Head Crushers'];
   List back = ["Supermans", '1 arm Rb Lat Pulls', 'Pullups', 'Wide-Grip Pullups', 'Rb Pulldowns', 'Shrugs', 'Rb Rows', 'Bent over Rows', "Db Reverse Fly's"];
-  List<DropdownMenuItem<String>> menuItems = List();
-
 
   @override
   Widget build(BuildContext context) {
@@ -60,10 +57,9 @@ class _HomeState extends State<Home> {                                          
       ),
     );
   }
-
-                                                                                //helper function to reset the state to display the desired data collection category
+  //helper function to reset the state to display the desired data collection category
   Widget getSetting(int setting){
-     //all possible major muscle groups
+    //all possible major muscle groups
     switch (setting) {
       case 1: {                                                                 //the home page with 4 options
         return Container(
@@ -91,7 +87,98 @@ class _HomeState extends State<Home> {                                          
         );
       }
       case 2: {                                                                 //the health option
-        return HealthTracking();
+        return Container(
+          color: Color.fromRGBO(240, 240, 240, 1.0),
+          child: ListView(
+            addAutomaticKeepAlives: false,
+            children: [
+              Row(
+                children: [
+                  Container(width: 10, color: Colors.red,),
+                  Expanded(
+                    child: Container(
+                      height: 100,
+                      child: FlatButton(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                          side: BorderSide(color: Color.fromRGBO(255, 255, 255, 1.0)),
+                        ),
+                        color: Color.fromRGBO(30,144,255, 0.50),
+                        textColor: Color.fromRGBO(0, 50, 50, 1.0),
+                        child: Text('F=4, WOKE UP', style: TextStyle(fontSize: 18),),
+                        onPressed: () {},                                           //TODO: record wake up
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Container(
+                      height: 100,
+                      child: RaisedButton(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                          side: BorderSide(color: Colors.white),
+                        ),
+                        color: Color.fromRGBO(255,255,255, 0.95),
+                        textColor: Colors.black,
+                        child: Text('WENT TO SLEEP', style: TextStyle(fontSize: 18),),
+                        onPressed: () {},                                       //TODO: record sleep time
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 10,),
+                ],
+              ),
+              Container(
+                height: 25,
+                //padding: EdgeInsets.fromLTRB(10, 0, 300, 0),
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      SizedBox(width: 10,),
+                      Text(
+                        'WORKOUTS:',
+                        style: TextStyle(fontSize: 17, color: Colors.black),
+                      ),]
+                ),
+              ),
+              Container(
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.all(Radius.circular(20))
+                  ),
+                  margin: EdgeInsets.fromLTRB(10, 5, 10, 5),
+                  child: ;                                                        //TODO
+              ),
+              Container(
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.all(Radius.circular(20))
+                ),
+                margin: EdgeInsets.fromLTRB(10, 5, 10, 5),
+                child: Align(
+                  alignment: Alignment(-0.7, 0),
+                  child: DropdownButton<String>(
+                    dropdownColor: Color.fromRGBO(128, 255, 0, 0.9),
+                    value: workout_string,
+                    hint: Text('Please choose workout'),
+                    items: workout_items(muscle_to_workout).map<DropdownMenuItem<String>>((stringItem) {    //TODO: change back to workouts[muscle_to_workout]
+                      return DropdownMenuItem<String>(
+                        value: stringItem,
+                        child: new Text(stringItem),
+                      );
+                    }).toList(),
+                    onChanged: (String newValue) {
+                      setState(() {
+                        workout_string = newValue;
+                        print(newValue);
+                      });
+                    },
+                  ),
+                ),
+              )
+            ],
+          ),
+        );
       }
       case 3: {                   //the beer option
         return Container();
@@ -102,7 +189,16 @@ class _HomeState extends State<Home> {                                          
       case 5: {                   //the coffee option
         return Container();
       }
-    };
+    }
+  }
+
+  List workout_items(muscle_to_workout){
+    if (workouts.containsKey(muscle_to_workout)){
+      return workouts[muscle_to_workout];
+    }else{
+      return ['Please choose a Muscle Group First'];
+    }
+
 
 
 
@@ -110,5 +206,3 @@ class _HomeState extends State<Home> {                                          
 
 
 }
-
-
