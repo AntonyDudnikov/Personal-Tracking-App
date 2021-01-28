@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
 
 
 class HealthTracking extends StatefulWidget {
@@ -66,30 +67,108 @@ class _HealthTrackingState extends State<HealthTracking> {
             children: [
               Container(
                 height: 130,
+                width: 170,
                 margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                child: FlatButton(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                    side: BorderSide(color: Color.fromRGBO(255, 255, 255, 1.0)),
-                  ),
-                  color: Color.fromRGBO(30,144,255, 0.50),
-                  textColor: Color.fromRGBO(0, 50, 50, 1.0),
-                  child: Text('WOKE UP', style: TextStyle(fontSize: 18),),
-                  onPressed: () {},                                           //TODO: record wake up
+                child: GestureDetector(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.black,
+                        border: Border.all(
+                          color: Colors.black,
+                          width: 1,
+                        ),
+                        borderRadius: BorderRadius.all(Radius.circular(20)),
+                        image: DecorationImage(
+                            image:AssetImage("day.JPG"),
+                            fit:BoxFit.cover
+                        ), // button text
+                      ),
+                      child: Stack(
+                        children: <Widget>[
+                          Align(
+                              alignment: Alignment.center,
+                              child: Text(
+                                "Woke Up",
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  foreground: Paint()
+                                    ..style = PaintingStyle.stroke
+                                    ..strokeWidth = 2
+                                    ..color = Colors.black,
+                                ),
+                              )
+                          ),
+                          Align(
+                              alignment: Alignment.center,
+                              child: Text(
+                                "Woke Up",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              )
+                          ),
+                        ],
+                      )
+                    ),
+                    onTap:(){
+                      print('works');//TODO record wake up
+                    }
                 ),
               ),
               Container(
                 height: 130,
+                width: 170,
                 margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                child: RaisedButton(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                    side: BorderSide(color: Colors.white),
-                  ),
-                  color: Color.fromRGBO(255,255,255, 0.95),
-                  textColor: Colors.black,
-                  child: Text('WENT TO SLEEP', style: TextStyle(fontSize: 18),),
-                  onPressed: () {},                                       //TODO: record sleep time
+                child: GestureDetector(
+                    child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.black,
+                          border: Border.all(
+                            color: Colors.black,
+                            width: 1,
+                          ),
+                          borderRadius: BorderRadius.all(Radius.circular(20)),
+                          image: DecorationImage(
+                              image:AssetImage("night.JPG"),
+                              fit:BoxFit.cover
+                          ), // button text
+                        ),
+                        child: Stack(
+                          children: <Widget>[
+                            Align(
+                                alignment: Alignment.center,
+                                child: Text(
+                                  "Went to sleep",
+                                  style: TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                    foreground: Paint()
+                                      ..style = PaintingStyle.stroke
+                                      ..strokeWidth = 2
+                                      ..color = Colors.black,
+                                  ),
+                                )
+                            ),
+                            Align(
+                                alignment: Alignment.center,
+                                child: Text(
+                                  "Went to sleep",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                )
+                            ),
+                          ],
+                        )
+                    ),
+                    onTap:(){
+                      //TODO record sleep
+                    }
                 ),
               ),
             ],
