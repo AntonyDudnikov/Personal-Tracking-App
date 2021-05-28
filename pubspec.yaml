@@ -25,7 +25,9 @@ dependencies:
     sdk: flutter
   flutter_spinkit: "^4.1.2"
   imagebutton: ^0.0.6
-
+  shared_preferences: ^2.0.4
+  flutter_picker:
+    git: git://github.com/yangyxd/flutter_picker.git
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -48,14 +50,13 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - beer_pic.png
-    - coffee_pic.png
-    - media.png
-    - media.jpg
     - health.png
     - day.JPG
     - night.JPG
-
+    - latte_background.jpg
+    - clockBackground.jpg
+    - beerBackground.jpg
+    - happinessBackground.jpg
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
 
@@ -67,12 +68,24 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  # fonts:
-  #   - family: Schyler
-  #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
-  #       - asset: fonts/Schyler-Italic.ttf
-  #         style: italic
+  fonts:
+    - family: Sans Pro Bold
+      fonts:
+        - asset: fonts/SourceSansPro-Bold.ttf
+        - weight: 700
+    - family: Sans Pro Regular
+      fonts:
+        - asset: fonts/SourceSansPro-Regular.ttf
+        - weight: 400
+    - family: Sans Pro Semi Bold
+      fonts:
+        - asset: fonts/SourceSansPro-SemiBold.ttf
+        - weight: 600
+    - family: KronaOne Regular
+      fonts:
+        - asset: fonts/KronaOne-Regular.ttf
+        - weight: 400
+
   #   - family: Trajan Pro
   #     fonts:
   #       - asset: fonts/TrajanPro.ttf
