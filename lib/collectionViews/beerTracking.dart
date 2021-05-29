@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 class BeerTracking extends StatefulWidget {
@@ -12,34 +13,51 @@ class _BeerTrackingState extends State<BeerTracking> {
   String beerBrand;
   List brands = ['Budlight', 'Molson', 'LostCraft', 'Lowenbrau'];
   String beerType;
-  List types = ['Ale', 'Pale Ale', 'Brown Ale', 'Sour Ale','Lager', 'Porter', 'Wheat', 'IPA', 'Stout', 'Pilsner'];
+  List beerTypes = ['Ale', 'Pale Ale', 'Brown Ale', 'Sour Ale','Lager', 'Porter', 'Wheat', 'IPA', 'Stout', 'Pilsner'];
   String measurement;
   List measurements = ['Pints', 'Cups', 'Cans', 'Tall Cans'];
-  String beerQuantity;
-  bool addBrand = false;
-  bool removeBrand = false;
-  bool changedBrand = false;
+  List hardTypes = ['Gin', 'Vodka', 'Whiskey', 'Rum','Tequila', 'Brandy'];
+  String hardType;
+  List cocktails = ['Gin and Tonic', 'Espresso Martini', 'Black Russian', 'White Russian', 'Rum & Coke', 'Mojito'];
+  String cocktail;
+  List coolersCiders = ['White Claw', 'Growers', "Mike's", 'Cottage Springs', 'Palm Bay'];
+  String coolerCider;
+  bool addList = false;
+  bool removeList = false;
+  bool save = false;
+
   final measurementController = TextEditingController();
+  final shotsController = TextEditingController();
+  final shotsCocktailController = TextEditingController();
+  final coolerCiderController = TextEditingController();
+
+  //variables to record
+  //BEER: beerBrand, beerType, measurement, measurementController
+  //HARD LIQUOR: hardType, shotsController
+  //COCKTAILS: cocktail, shotsCocktailController
+  //COOLERS AND CIDERS: coolerCider, coolerCiderController
 
 
-  ///To create a textfield or dropdown list to change the beer brand list of items, to add/remove
-  Widget addRemoveBeerBrand(bool add, bool remove) {
+
+  ///To create a textfield or dropdown list to change the beer brand/cocktail/cooler list of items, to add/remove
+  ///
+  ///parameters:
+  ///       add: bool to initiate textfield to input new item in list
+  ///       remove: bool to initiate dropdownmenuitem to remove item from list
+  ///       drink: specifiy which list to manipulate
+  Widget addRemoveList(bool add, bool remove, String drink) {
     if (add == true && remove == false){
-      print('clicked');
       return Material(
         child: TextField(
           decoration: InputDecoration(
             border: OutlineInputBorder(),
-            labelText: 'Add Brand',
+            labelText: 'Add to List',
           ),
           onSubmitted: (String str) {
             if (str != ''){
-              print(str);
               setState(() {
-                brands.add(str);
-                print(brands);
-                addBrand = false;
-                changedBrand = true;
+                addRemoveHelper(drink).add(str);
+                addList = false;
               });
             };
           },
@@ -48,20 +66,26 @@ class _BeerTrackingState extends State<BeerTracking> {
     }else if (add == false && remove == true){
       return DropdownButton<String>(
         dropdownColor: Colors.white,
-        hint: Text('Click Brand to delete'),
+        hint: Text('Click Item to delete'),
         //value: this.removeString,
         isExpanded: true,
-        items: brands.map<DropdownMenuItem<String>>((stringItem) {
+        items: addRemoveHelper(drink).map<DropdownMenuItem<String>>((stringItem) {
           return DropdownMenuItem(
             value: stringItem,
             child: Text(stringItem),
           );
         }).toList(),
         onChanged: (String newValue) { //upon click, remove item from workout, repopulate workouts list, remove dropdown
-          brands.remove(newValue);
+          addRemoveHelper(drink).remove(newValue);
           setState((){
-            removeBrand = false;
-            changedBrand = true;
+            if (drink == 'Beer' && newValue == beerBrand){
+              beerBrand = null;
+            }else if (drink == 'Cocktail' && newValue == cocktail){
+              cocktail = null;
+            }else{
+              coolerCider = null;
+            }
+            removeList = false;
           });
         },
       );
@@ -69,12 +93,32 @@ class _BeerTrackingState extends State<BeerTracking> {
       return SizedBox(height: 0);
     }
   }
+  /// Helper for AddRemoveList, when you input string, returns corresponing named list
+  List addRemoveHelper(String choice){
+    switch (choice) {
+      case 'Beer': {
+        return brands;
+      }
+      case 'Cocktail': {
+        return cocktails;
+      }
+      case 'Coolers': {
+        return coolersCiders;
+      }
+    }
+  }
+
+  bool checkUpdates(){
+    return (measurementController.text != '' || shotsController.text != '' ||
+        shotsCocktailController.text != '' || coolerCiderController.text != '');
+  }
 
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
+        color: Color.fromRGBO(245, 245, 245, 1.0),
         child: Stack(
           children: [
           ListView(
@@ -151,7 +195,6 @@ class _BeerTrackingState extends State<BeerTracking> {
                           onChanged: (String choice) {
                             setState(() {
                               beerBrand = choice;
-                              print(beerBrand);
                             });
                           },
                         )
@@ -164,15 +207,10 @@ class _BeerTrackingState extends State<BeerTracking> {
                           color: Colors.blue,
                         ),
                         onPressed: () {
-                          if (addBrand == true){
-                            setState(() {
-                              addBrand = false;
-                            });
-                          }else{
-                            setState(() {
-                              addBrand = true;
-                            });
-                          }},
+                          setState(() {
+                            addList ? addList = false : addList = true;
+                          });
+                        },
                       ),
                       IconButton(
                         icon: Icon(
@@ -181,20 +219,14 @@ class _BeerTrackingState extends State<BeerTracking> {
                           color: Colors.red,
                         ),
                         onPressed: (beerBrand != null) ? () {
-                          if (removeBrand == true){
-                            setState(() {
-                              removeBrand = false;
-                            });
-                          }else{
-                            setState(() {
-                              removeBrand = true;
-                            });
-                          }
+                          setState(() {
+                            removeList ? removeList = false : removeList = true;
+                          });
                         } : null,
                       ),
                     ],
                   ),
-                  addRemoveBeerBrand(addBrand, removeBrand),
+                  addRemoveList(addList, removeList, 'Beer'),
                   Row(                                                          //TYPE
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
@@ -205,7 +237,7 @@ class _BeerTrackingState extends State<BeerTracking> {
                             value: this.beerType,
                             hint: Text('Beer Style'),
                             isExpanded: true,
-                            items: types.map<DropdownMenuItem<String>>((stringItem) {
+                            items: beerTypes.map<DropdownMenuItem<String>>((stringItem) {
                               return DropdownMenuItem(
                                 value: stringItem,
                                 child: Text(stringItem),
@@ -214,7 +246,6 @@ class _BeerTrackingState extends State<BeerTracking> {
                             onChanged: (String choice) {
                               setState(() {
                                 beerType = choice;
-                                print(beerType);
                               });
                             },
                           )
@@ -255,7 +286,12 @@ class _BeerTrackingState extends State<BeerTracking> {
                               controller: measurementController,
                               textAlign: TextAlign.center,
                               keyboardType: TextInputType.number,
-                              style: TextStyle(fontSize: 14),
+                              style: TextStyle(fontSize: 18),
+                              onSubmitted: (String text){
+                                setState(() {
+                                  (text != '') ? save = true : save = false;
+                                });
+                              },
                             ),
                           ),
                         )
@@ -269,7 +305,7 @@ class _BeerTrackingState extends State<BeerTracking> {
               margin: EdgeInsets.fromLTRB(0, 15, 0, 15),
               child: Center(
                 child: Text(
-                  'HARD SPIRITS',
+                  'HARD LIQUOR',
                   style: TextStyle(
                       fontSize: 17,
                       color: Colors.black,
@@ -279,11 +315,59 @@ class _BeerTrackingState extends State<BeerTracking> {
               ),
             ),
             Container(
+              margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
+              padding: EdgeInsets.fromLTRB(20, 5, 20, 5),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.all(Radius.circular(20))
               ),
-              child: SizedBox(height: 75,),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                      width: 200,
+                      height: 40,
+                      child: DropdownButton<String>(
+                        value: this.hardType,
+                        hint: Text('Beer Style'),
+                        isExpanded: true,
+                        items: hardTypes.map<DropdownMenuItem<String>>((stringItem) {
+                          return DropdownMenuItem(
+                            value: stringItem,
+                            child: Text(stringItem),
+                          );
+                        }).toList(),
+                        onChanged: (String choice) {
+                          setState(() {
+                            hardType = choice;
+                          });
+                        },
+                      )
+                  ),
+                  Text(
+                    'Shots:',
+                    style: TextStyle(
+                        fontSize: 18
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                    width: 60,
+                    height: 35,
+                    child: TextField(
+                      controller: shotsController,
+                      textAlign: TextAlign.center,
+                      keyboardType: TextInputType.number,
+                      style: TextStyle(fontSize: 18),
+                      onSubmitted: (String text){
+                        setState(() {
+                          (text != '') ? save = true : save = false;
+                        });
+                      },
+                    ),
+                  )
+                ],
+              ),
             ),
             Container(                                                          //COCKTAILS
               margin: EdgeInsets.fromLTRB(0, 15, 0, 15),
@@ -299,17 +383,99 @@ class _BeerTrackingState extends State<BeerTracking> {
               ),
             ),
             Container(
+              margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
+              padding: EdgeInsets.fromLTRB(20, 5, 20, 5),
               decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.all(Radius.circular(20))
               ),
-              child: SizedBox(height: 75,),
+              child: Column(
+                children: [
+                  Row(                                                          //BRAND
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Container(
+                          width: 200,
+                          height: 40,
+                          child: DropdownButton<String>(
+                            value: this.cocktail,
+                            hint: Text('Cocktail'),
+                            isExpanded: true,
+                            items: cocktails.map<DropdownMenuItem<String>>((stringItem) {
+                              return DropdownMenuItem(
+                                value: stringItem,
+                                child: Text(stringItem),
+                              );
+                            }).toList(),
+                            onChanged: (String choice) {
+                              setState(() {
+                                cocktail = choice;
+                              });
+                            },
+                          )
+                      ),
+                      TextButton.icon(
+                        label: Text(''),
+                        icon: Icon(
+                          Icons.add_box,
+                          size: 30,
+                          color: Colors.blue,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            addList ? addList = false : addList = true;
+                          });
+                        },
+                      ),
+                      IconButton(
+                        icon: Icon(
+                          Icons.indeterminate_check_box,
+                          size: 30,
+                          color: Colors.red,
+                        ),
+                        onPressed: (cocktail != null) ? () {
+                          setState(() {
+                            removeList ? removeList = false : removeList = true;
+                          });
+                        } : null,
+                      ),
+                    ],
+                  ),
+                  addRemoveList(addList, removeList, 'Cocktail'),
+                  Row(
+                    children: [
+                      Text(
+                        'Shots of Liquor in Cocktail:',
+                        style: TextStyle(
+                          fontSize: 18
+                        ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                        width: 100,
+                        height: 35,
+                        child: TextField(
+                          controller: shotsCocktailController,
+                          textAlign: TextAlign.center,
+                          keyboardType: TextInputType.number,
+                          style: TextStyle(fontSize: 18),
+                          onSubmitted: (String text){
+                            setState(() {
+                              (text != '') ? save = true : save = false;
+                            });
+                          },
+                        ),
+                      )
+                    ],
+                  ),
+                ],
+              ),
             ),
             Container(                                                          //COOLERS
               margin: EdgeInsets.fromLTRB(0, 15, 0, 15),
               child: Center(
                 child: Text(
-                  'COOLERS',
+                  'COOLERS & CIDERS',
                   style: TextStyle(
                       fontSize: 17,
                       color: Colors.black,
@@ -319,12 +485,93 @@ class _BeerTrackingState extends State<BeerTracking> {
               ),
             ),
             Container(
-              margin: EdgeInsets.fromLTRB(0, 0, 0, 15),
+              margin: EdgeInsets.fromLTRB(10, 0, 10, 15),
+              padding: EdgeInsets.fromLTRB(20, 5, 20, 5),
               decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.all(Radius.circular(20))
               ),
-              child: SizedBox(height: 75,),
+              child: Column(
+                children: [
+                  Row(                                                          //BRAND
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Container(
+                          width: 200,
+                          height: 40,
+                          child: DropdownButton<String>(
+                            value: this.coolerCider,
+                            hint: Text('Cooler or Cider'),
+                            isExpanded: true,
+                            items: coolersCiders.map<DropdownMenuItem<String>>((stringItem) {
+                              return DropdownMenuItem(
+                                value: stringItem,
+                                child: Text(stringItem),
+                              );
+                            }).toList(),
+                            onChanged: (String choice) {
+                              setState(() {
+                                coolerCider = choice;
+                              });
+                            },
+                          )
+                      ),
+                      TextButton.icon(
+                        label: Text(''),
+                        icon: Icon(
+                          Icons.add_box,
+                          size: 30,
+                          color: Colors.blue,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            addList ? addList = false : addList = true;
+                          });
+                        },
+                      ),
+                      IconButton(
+                        icon: Icon(
+                          Icons.indeterminate_check_box,
+                          size: 30,
+                          color: Colors.red,
+                        ),
+                        onPressed: (cocktail != null) ? () {
+                          setState(() {
+                            removeList ? removeList = false : removeList = true;
+                          });
+                        } : null,
+                      ),
+                    ],
+                  ),
+                  addRemoveList(addList, removeList, 'Coolers'),
+                  Row(
+                    children: [
+                      Text(
+                        'Number of Cans:',
+                        style: TextStyle(
+                            fontSize: 18
+                        ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                        width: 100,
+                        height: 35,
+                        child: TextField(
+                          controller: coolerCiderController,
+                          textAlign: TextAlign.center,
+                          keyboardType: TextInputType.number,
+                          style: TextStyle(fontSize: 18),
+                          onSubmitted: (String text){
+                            setState(() {
+                              (text != '') ? save = true : save = false;
+                            });
+                          },
+                        ),
+                      )
+                    ],
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -343,6 +590,28 @@ class _BeerTrackingState extends State<BeerTracking> {
                 },
               ),
             ),
+            save ? Positioned(
+              top: 50,
+              right: 10,
+              child: FlatButton(
+                color: Color.fromRGBO(255, 255, 255, 0.5),
+                child: Text('Save', style: TextStyle(color: Colors.black, fontSize: 18)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    side: BorderSide(color: Colors.black, style: BorderStyle.solid)
+                ),
+                onPressed: () {
+                  //TODO: save the data inputted
+                  setState(() {
+                    save = false;
+                    measurementController.text = '';
+                    shotsCocktailController.text = '';
+                    shotsController.text = '';
+                    coolerCiderController.text = '';
+                  });
+                },
+              ),
+            ) : SizedBox(height: 0,),
           ],
         ),
       ),

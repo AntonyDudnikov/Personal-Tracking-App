@@ -143,6 +143,8 @@ class _HealthTrackingState extends State<HealthTracking> {
           findMuscleList(muscleString).remove(newValue);
           setState((){
             removeWorkout = false;
+
+            (newValue == workoutString) ? workoutString = null : null;
             populateDropItems(findMuscleList(muscleString)); //repopulate the workouts list
           });
         },
