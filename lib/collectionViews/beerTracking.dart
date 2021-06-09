@@ -13,17 +13,26 @@ class _BeerTrackingState extends State<BeerTracking> {
   String beerBrand;
   List brands = ['Budlight', 'Molson', 'LostCraft', 'Lowenbrau'];
   String beerType;
-  List beerTypes = ['Ale', 'Pale Ale', 'Brown Ale', 'Sour Ale','Lager', 'Porter', 'Wheat', 'IPA', 'Stout', 'Pilsner'];
+  List beerTypes = ['Ale', 'Pale Ale', 'Brown Ale', 'Sour Ale','Lager', 'Porter'
+    , 'Wheat', 'IPA', 'Stout', 'Pilsner'];
   String measurement;
   List measurements = ['Pints', 'Cups', 'Cans', 'Tall Cans'];
   List hardTypes = ['Gin', 'Vodka', 'Whiskey', 'Rum','Tequila', 'Brandy'];
   String hardType;
-  List cocktails = ['Gin and Tonic', 'Espresso Martini', 'Black Russian', 'White Russian', 'Rum & Coke', 'Mojito'];
+  List cocktails = ['Gin and Tonic', 'Espresso Martini', 'Black Russian',
+    'White Russian', 'Rum & Coke', 'Mojito'];
   String cocktail;
-  List coolersCiders = ['White Claw', 'Growers', "Mike's", 'Cottage Springs', 'Palm Bay'];
+  List coolersCiders = ['White Claw', 'Growers', "Mike's", 'Cottage Springs',
+    'Palm Bay'];
   String coolerCider;
-  bool addList = false;
-  bool removeList = false;
+  //all add/remove bools are for engaging the widgets to add/remove to the lists
+  //seperate for each category so they dont all engage at the same time
+  bool addBeer = false;
+  bool removeBeer = false;
+  bool addCocktail = false;
+  bool removeCocktail = false;
+  bool addCC = false;
+  bool removeCC = false;
   bool save = false;
 
   final measurementController = TextEditingController();
@@ -57,7 +66,13 @@ class _BeerTrackingState extends State<BeerTracking> {
             if (str != ''){
               setState(() {
                 addRemoveHelper(drink).add(str);
-                addList = false;
+                if (drink == 'Beer'){
+                  addBeer = false;
+                }else if (drink == 'Cocktail'){
+                  addCocktail = false;
+                }else{
+                  addCC = false;
+                }
               });
             };
           },
@@ -80,12 +95,14 @@ class _BeerTrackingState extends State<BeerTracking> {
           setState((){
             if (drink == 'Beer' && newValue == beerBrand){
               beerBrand = null;
+              removeBeer = false;
             }else if (drink == 'Cocktail' && newValue == cocktail){
               cocktail = null;
+              removeCocktail = false;
             }else{
               coolerCider = null;
+              removeCC = false;
             }
-            removeList = false;
           });
         },
       );
@@ -108,10 +125,6 @@ class _BeerTrackingState extends State<BeerTracking> {
     }
   }
 
-  bool checkUpdates(){
-    return (measurementController.text != '' || shotsController.text != '' ||
-        shotsCocktailController.text != '' || coolerCiderController.text != '');
-  }
 
 
   @override
@@ -208,7 +221,7 @@ class _BeerTrackingState extends State<BeerTracking> {
                         ),
                         onPressed: () {
                           setState(() {
-                            addList ? addList = false : addList = true;
+                            addBeer = !addBeer;
                           });
                         },
                       ),
@@ -220,13 +233,13 @@ class _BeerTrackingState extends State<BeerTracking> {
                         ),
                         onPressed: (beerBrand != null) ? () {
                           setState(() {
-                            removeList ? removeList = false : removeList = true;
+                            removeBeer = !removeBeer;
                           });
                         } : null,
                       ),
                     ],
                   ),
-                  addRemoveList(addList, removeList, 'Beer'),
+                  addRemoveList(addBeer, removeBeer, 'Beer'),
                   Row(                                                          //TYPE
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
@@ -423,7 +436,7 @@ class _BeerTrackingState extends State<BeerTracking> {
                         ),
                         onPressed: () {
                           setState(() {
-                            addList ? addList = false : addList = true;
+                            addCocktail = !addCocktail;
                           });
                         },
                       ),
@@ -435,13 +448,13 @@ class _BeerTrackingState extends State<BeerTracking> {
                         ),
                         onPressed: (cocktail != null) ? () {
                           setState(() {
-                            removeList ? removeList = false : removeList = true;
+                            removeCocktail= !removeCocktail;
                           });
                         } : null,
                       ),
                     ],
                   ),
-                  addRemoveList(addList, removeList, 'Cocktail'),
+                  addRemoveList(addCocktail, removeCocktail, 'Cocktail'),
                   Row(
                     children: [
                       Text(
@@ -525,7 +538,7 @@ class _BeerTrackingState extends State<BeerTracking> {
                         ),
                         onPressed: () {
                           setState(() {
-                            addList ? addList = false : addList = true;
+                            addCC = !addCC;
                           });
                         },
                       ),
@@ -537,13 +550,13 @@ class _BeerTrackingState extends State<BeerTracking> {
                         ),
                         onPressed: (cocktail != null) ? () {
                           setState(() {
-                            removeList ? removeList = false : removeList = true;
+                            removeCC = !removeCC;
                           });
                         } : null,
                       ),
                     ],
                   ),
-                  addRemoveList(addList, removeList, 'Coolers'),
+                  addRemoveList(addCC, removeCC, 'Coolers'),
                   Row(
                     children: [
                       Text(
@@ -608,6 +621,12 @@ class _BeerTrackingState extends State<BeerTracking> {
                     shotsCocktailController.text = '';
                     shotsController.text = '';
                     coolerCiderController.text = '';
+                    beerBrand = null;
+                    beerType = null;
+                    measurement = null;
+                    hardType = null;
+                    cocktail = null;
+                    coolerCider = null;
                   });
                 },
               ),

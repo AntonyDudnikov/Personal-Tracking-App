@@ -58,6 +58,8 @@ flutter:
     - clockBackground.jpg
     - beerBackground.jpg
     - happinessBackground.jpg
+    - coffee_guide.jpg
+    - espresso_guide.jpg
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
 
