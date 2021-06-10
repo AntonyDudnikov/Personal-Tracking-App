@@ -93,14 +93,14 @@ class _BeerTrackingState extends State<BeerTracking> {
         onChanged: (String newValue) { //upon click, remove item from workout, repopulate workouts list, remove dropdown
           addRemoveHelper(drink).remove(newValue);
           setState((){
-            if (drink == 'Beer' && newValue == beerBrand){
-              beerBrand = null;
+            if (drink == 'Beer'){
+              (newValue == beerBrand) ? beerBrand = null : null;
               removeBeer = false;
-            }else if (drink == 'Cocktail' && newValue == cocktail){
-              cocktail = null;
+            }else if (drink == 'Cocktail'){
+              (newValue == cocktail) ? cocktail = null : null;
               removeCocktail = false;
             }else{
-              coolerCider = null;
+              (newValue == coolerCider) ? coolerCider = null : null;
               removeCC = false;
             }
           });
