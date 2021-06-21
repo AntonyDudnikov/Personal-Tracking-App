@@ -26,6 +26,7 @@ class _MediaTrackingState extends State<MediaTracking> {
   final tvSeasonController = TextEditingController();
   final tvEpisodeController = TextEditingController();
   final tvLengthController = TextEditingController();
+  final movieController = TextEditingController();
 
   Widget addRemoveList(bool add, bool remove, String media) {
     if (add == true && remove == false){
@@ -207,11 +208,14 @@ class _MediaTrackingState extends State<MediaTracking> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Text(
-                        'Season:',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w400
+                      Container(
+                        width: 75,
+                        child: Text(
+                          'Season:',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w400
+                          ),
                         ),
                       ),
                       Container(
@@ -228,11 +232,14 @@ class _MediaTrackingState extends State<MediaTracking> {
                           },
                         ),
                       ),
-                      Text(
-                        'Episode:',
-                        style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w400
+                      Container(
+                        width: 80,
+                        child: Text(
+                          'Episode:',
+                          style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w400
+                          ),
                         ),
                       ),
                       Container(
@@ -252,17 +259,98 @@ class _MediaTrackingState extends State<MediaTracking> {
                     ],
                   ),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Text(
-                        'Length:',
-                        style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w400
+                      Container(
+                        width: 75,
+                        child: Text(
+                          'Length:',
+                          style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w400
+                          ),
                         ),
+                      ),
+                      Container(
+                        width: 75,
+                        child: TextField(
+                          controller: tvLengthController,
+                          style: TextStyle(fontSize: 18),
+                          textAlign: TextAlign.center,
+                          onSubmitted: (String text){
+                            setState(() {
+                              (text != '') ? save = true : save = false;
+                            });
+                          },
+                        ),
+                      ),
+                      Container(
+                        width: 80,
+                      ),
+                      Container(
+                        width: 75,
                       ),
                     ],
                   ),
+                ],
+              ),
+            ),
+            Container(                                                          //COCKTAILS
+              margin: EdgeInsets.fromLTRB(0, 15, 0, 15),
+              child: Center(
+                child: Text(
+                  'MOVIES',
+                  style: TextStyle(
+                      fontSize: 17,
+                      color: Colors.black,
+                      fontFamily: 'KronaOne Regular'
+                  ),
+                ),
+              ),
+            ),
+            Container(
+              margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
+              padding: EdgeInsets.fromLTRB(20, 5, 20, 5),
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.all(Radius.circular(20))
+              ),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        width: 200,
+                        child: TextField(
+                          controller: movieController,
+                          style: TextStyle(fontSize: 18),
+                          textAlign: TextAlign.center,
+                          onSubmitted: (String text){
+                            setState(() {
+                              (text != '') ? save = true : save = false;
+                            });
+                          },
+                        ),
+                      ),
+                      SizedBox(
+                        height: 30,
+                        child: TextButton(
+                          child: Text(
+                            'Add',
+                          ),
+                          style: TextButton.styleFrom(
+                            backgroundColor: Colors.blue[400],
+                            primary: Colors.white,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.all(Radius.circular(20))
+                            ),
+                          ),
+                          onPressed: () {},
+                        ),
+                      )
+                    ],
+
+                  )
                 ],
               ),
             ),
@@ -299,6 +387,7 @@ class _MediaTrackingState extends State<MediaTracking> {
                     save = false;
                     tvSeasonController.text = '';
                     tvEpisodeController.text = '';
+                    tvLengthController.text = '';
                     tvShow = null;
                     movie = null;
                     documentary = null;
